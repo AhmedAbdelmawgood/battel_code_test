@@ -19,7 +19,26 @@ public class RobotPlayer {
         	while(true){
         		try{
         			if (rc.isCoreReady()){
-            			int fate = rand.nextInt(1000);
+            			if(isItDangerous() == false){
+            				RobotType typeToBuild = robotTypes[0];
+            				if (rc.hasBuildRequirements(typeToBuild)) {
+                                Direction dirToBuild = directions[rand.nextInt(8)];
+                                for (int i = 0; i < 8; i++) {
+                                    // If possible, build in this direction
+                                    if (rc.canBuild(dirToBuild, typeToBuild)) {
+                                        rc.build(dirToBuild, typeToBuild);
+                                        break;
+                                    } else {
+                                        // Rotate the direction to try
+                                        dirToBuild = dirToBuild.rotateLeft();
+                                    }
+                                }
+                            }//end of if has build requirements
+            			}
+            			else{
+            				
+            			}
+        				int fate = rand.nextInt(1000);
             			Direction dir = directions[fate%8];
             			if (rc.senseRubble(rc.getLocation().add(dir)) >= GameConstants.RUBBLE_OBSTRUCTION_THRESH ){
             				rc.clearRubble(dir);
@@ -29,12 +48,14 @@ public class RobotPlayer {
             		}
         		}catch (Exception e){
                     System.out.println(e.getMessage());
-                    e.printStackTrace();
-        			
+                    e.printStackTrace();	
         		}
         		Clock.yield();
         	}
             
         }
+	}
+	public static boolean isItDangerous(){
+		return false;
 	}
 }
