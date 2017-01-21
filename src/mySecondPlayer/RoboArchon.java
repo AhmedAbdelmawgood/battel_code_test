@@ -15,20 +15,26 @@ public class RoboArchon extends RobotPlayer{
 	public static void init() throws GameActionException{
 		electLeader();
 		setBuildOrder();
+		tryActivate();
+			// System.out.println("Hello This is Leader");
 		// lastRoundNumber = rc.getRoundNum();
 		totalEnemeiesPower = 0;
 		totalAlliesPower = 0;
 		int roundNum = rc.getRoundNum();
-		if (roundNum > 400 ){
-			if(rc.getRoundNum()%3 == 0){
-				if (rc.isCoreReady())
-					tryBuild();			
-			}
-		}
-		else
-			tryBuild();			
+		// if (roundNum > 400 ){
+		// 	if(rc.getRoundNum()%3 == 0){
+		// 		if (rc.isCoreReady())
+		// 			tryBuild();			
+		// 	}
+		// }
+		// else
+		// 	tryBuild();			
 		sendSignal();
-		theDirection = Sensors.getSafeDirection();
+		if(id != 0)
+			findInstruction();
+		else
+			theDirection = Sensors.getSafeDirection();
+
 		// System.out.println(theDirection);
 	}
 	public static void tryTurn() throws GameActionException{
@@ -41,7 +47,7 @@ public class RoboArchon extends RobotPlayer{
         // }
         if (id != 0)
         	findInstruction();
-        moveForward(theDirection);	
+        moveForward(theDirection);
 	}
 
 	public static void tryBuild() throws GameActionException{
@@ -77,16 +83,31 @@ public class RoboArchon extends RobotPlayer{
 		Signal[] signals = rc.emptySignalQueue();
 		if (signals.length == 0 ){
 			id = 0;
-			rc.broadcastMessageSignal(0,0,2500);
+			rc.broadcastMessageSignal(ours.ordinal(),0,100);
 			// signals = rc.emptySignalQueue();
 			// System.our.println()
-
+		}else{
+			for (Signal s:signals){
+				if (s.getMessage()[0] == ours.ordinal()){
+					leaderLocation = signals[0].getLocation();
+					return;
+				}
+			}
 		}
 	}
 // ////////////////////////////////////Signaling ////////////////////////////////
 	public static void sendSignal() throws GameActionException{
 		if(id != 0)
 			return;
-		rc.broadcastMessageSignal(ours.ordinal(),theDirection.ordinal(),250);
+		rc.broadcastMessageSignal(ours.ordinal(),theDirection.ordinal(),500);
+	}
+	public static void tryActivate() throws GameActionException{
+		RobotInfo[] neut = rc.senseNearbyRobots(2,Team.NEUTRAL);
+		if (neut.length == 0)
+			return;
+		for(RobotInfo robot :neut){
+			rc.activate(robot.location);
+		}
+		
 	}
 }

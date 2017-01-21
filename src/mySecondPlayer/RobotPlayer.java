@@ -21,6 +21,8 @@ public class RobotPlayer {
     static ArrayList<RobotInfo> allEnemeies = new ArrayList<RobotInfo>();   
     public static int totalEnemeiesPower;
     public static int totalAlliesPower;
+    public static int maxDistanceToLeader = 5000;
+    public static MapLocation leaderLocation = null;
     public static void run(RobotController rcIn){
         rc = rcIn;
         while(true){
@@ -43,6 +45,14 @@ public class RobotPlayer {
         appendEnemeies(zombiesEnemey);
         appendEnemeies(robotEnemey);
         RobotType type = rc.getType();
+        System.out.println(leaderLocation);
+        if (leaderLocation != null && maxDistanceToLeader > 100 && type.canMove()){
+            Direction dir = myCurrentLocation.directionTo(leaderLocation);
+            if(rc.canMove(dir)){
+                rc.move(dir);
+                return;
+            }
+        }
         switch (type){
             case ARCHON: 
                         RoboArchon.init();
@@ -62,30 +72,15 @@ public class RobotPlayer {
                         if ( rc.canMove(dir) ){
                             rc.move(dir);
                         }
-
+                        if (allEnemeies.size() > 0){ 
+                            if (rc.getType().canAttack()){
+                                rc.attackLocation(allEnemeies.get(0).location);
+                            }
+                        }
                     }
                     break;                        
         }
-        // if (type == RobotType.ARCHON){
-        //     RoboArchon.init();
-        //     RoboArchon.tryTurn();            
-        // }else if(type == RobotType.SOLDIER){
-        //     RoboSoldier.init();
-        //     RoboSoldier.tryTurn();
-        // }else{
-        //     if (allEnemeies.size() > 0){
-        //         if(rc.isWeaponReady())
-        //             rc.attackLocation(allEnemeies.get(0).location);
-        //     }else{
-        //         if ( rc.isCoreReady() ){
-        //             Direction dir = getRandomDirection();
-        //             if ( rc.canMove(dir) ){
-        //                 rc.move(dir);
-        //             }
 
-        //         }
-        //     }
-        // }//
     }
     public static void moveForward(Direction ahead) throws GameActionException{
         if (rc.isCoreReady() == false){
@@ -97,18 +92,18 @@ public class RobotPlayer {
             if (rc.canMove(possibleDirection) && visitedLocs.contains(nextLocation) == false) {
                 rc.move(possibleDirection);
                 visitedLocs.add(nextLocation);
-                if (visitedLocs.size() > 4)
+                if (visitedLocs.size() > 15)
                     visitedLocs.remove(0);
                 return;
             }
         }
-
     }    
     public static Direction getRandomDirection(){
         int fate = rand.nextInt(1000);
         return directions[fate%8]; 
     }
     public static void appendEnemeies(RobotInfo[] collec){
+        //merging all the enemies in one Array
         for(RobotInfo enemey: collec){
             allEnemeies.add(enemey);
         }
@@ -129,8 +124,12 @@ public class RobotPlayer {
         // System.out.println("Came here");
         // System.out.println("Came here");
         MapLocation senderLocation = m.getLocation();
+        // We set this location as the leader location
+        maxDistanceToLeader = myCurrentLocation.distanceSquaredTo(m.getLocation());
+        leaderLocation = senderLocation;
         Direction targetDirection = Direction.values()[ m.getMessage()[1] ];
         MapLocation goTo = senderLocation.add(targetDirection.dx*3,targetDirection.dy*3);
         theDirection = rc.getLocation().directionTo(goTo);  
-    }    
+    }
+
 }

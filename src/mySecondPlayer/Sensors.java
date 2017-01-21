@@ -7,6 +7,7 @@ public class Sensors extends RobotPlayer{
 	// }
 	// static int totalEnemeiesPower = 0; 
 	static RobotInfo[] allEnemeies;
+	// public static MapLocation leaderLocation = null;
 
 	public static Direction getSafeDirection() throws GameActionException{
 		MapLocation centerDmg = centerOfDamage();
@@ -49,5 +50,6 @@ public class Sensors extends RobotPlayer{
 		for(RobotInfo robot: allEnemeies){
 			totalAlliesPower += robot.attackPower;
 		}
-	} 
+	}
+
 }
