@@ -21,14 +21,14 @@ public class RoboArchon extends RobotPlayer{
 		totalEnemeiesPower = 0;
 		totalAlliesPower = 0;
 		int roundNum = rc.getRoundNum();
-		// if (roundNum > 400 ){
-		// 	if(rc.getRoundNum()%3 == 0){
-		// 		if (rc.isCoreReady())
-		// 			tryBuild();			
-		// 	}
-		// }
-		// else
-		// 	tryBuild();			
+		if (roundNum > 400 ){
+			if(rc.getRoundNum()%3 == 0){
+				if (rc.isCoreReady())
+					tryBuild();			
+			}
+		}
+		else
+			tryBuild();			
 		sendSignal();
 		if(id != 0)
 			findInstruction();

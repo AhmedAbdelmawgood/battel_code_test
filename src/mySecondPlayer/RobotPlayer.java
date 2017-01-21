@@ -74,7 +74,8 @@ public class RobotPlayer {
                         }
                         if (allEnemeies.size() > 0){ 
                             if (rc.getType().canAttack()){
-                                rc.attackLocation(allEnemeies.get(0).location);
+                                if(rc.isWeaponReady())
+                                    rc.attackLocation(allEnemeies.get(0).location);
                             }
                         }
                     }
@@ -128,7 +129,7 @@ public class RobotPlayer {
         maxDistanceToLeader = myCurrentLocation.distanceSquaredTo(m.getLocation());
         leaderLocation = senderLocation;
         Direction targetDirection = Direction.values()[ m.getMessage()[1] ];
-        MapLocation goTo = senderLocation.add(targetDirection.dx*3,targetDirection.dy*3);
+        MapLocation goTo = senderLocation.add(targetDirection.dx*5,targetDirection.dy*5);
         theDirection = rc.getLocation().directionTo(goTo);  
     }
 

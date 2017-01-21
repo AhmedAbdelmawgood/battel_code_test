@@ -6,9 +6,9 @@ public class RoboScout extends RobotPlayer{
 	public static Modes mode = Modes.RANDOM;
 	public static void init() throws GameActionException{
 		// findInstruction();
-		if (mode == Modes.RANDOM){
-			theDirection = getRandomDirection();
-		}
+		// if (mode == Modes.RANDOM){
+		// 	theDirection = getRandomDirection();
+		// }
 	}
 	public static void tryTurn() throws GameActionException{
 		theDirection = Sensors.getSafeDirection();
