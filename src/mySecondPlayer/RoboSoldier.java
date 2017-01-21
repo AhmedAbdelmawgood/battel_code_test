@@ -7,6 +7,8 @@ public class RoboSoldier extends RobotPlayer{
 	static boolean retreating = false;
 	public static void init() throws GameActionException{
 		health = rc.getHealth();
+		totalEnemeiesPower = 0;
+		totalAlliesPower = 0;		
 		if (builderId < 0)
 			assignBuilderId();
 		findInstruction();		
@@ -27,26 +29,7 @@ public class RoboSoldier extends RobotPlayer{
 				builderId = rob.ID;
 		}
 	}
-	private static void findInstruction() throws GameActionException{
-		Signal[] incomingSignals = rc.emptySignalQueue();
-		Signal m = null;
-		for (int messageOrd = 0; messageOrd < incomingSignals.length; messageOrd++) {
-			m = incomingSignals[messageOrd];
-			if (ours.ordinal() == m.getMessage()[0])
-				break;
-		}
-		if (m == null)
-			return;
-		// System.out.println("Came here");
-		// System.out.println("Came here");
-		// System.out.println("Came here");
-		// System.out.println("Came here");
-		// System.out.println("Came here");
-		MapLocation senderLocation = m.getLocation();
-		Direction targetDirection = Direction.values()[ m.getMessage()[1] ];
-		MapLocation goTo = senderLocation.add(targetDirection.dx*3,targetDirection.dy*3);
-		theDirection = rc.getLocation().directionTo(goTo);	
-	}
+
 	private static void tryAttack() throws GameActionException{
 		if(allEnemeies.size()>0){
 			if( rc.isWeaponReady() )

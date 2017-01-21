@@ -19,7 +19,8 @@ public class RobotPlayer {
     static Direction theDirection = directions[0];
     static ArrayList<MapLocation> visitedLocs = new ArrayList<MapLocation>();
     static ArrayList<RobotInfo> allEnemeies = new ArrayList<RobotInfo>();   
-    
+    public static int totalEnemeiesPower;
+    public static int totalAlliesPower;
     public static void run(RobotController rcIn){
         rc = rcIn;
         while(true){
@@ -42,26 +43,49 @@ public class RobotPlayer {
         appendEnemeies(zombiesEnemey);
         appendEnemeies(robotEnemey);
         RobotType type = rc.getType();
-        if (type == RobotType.ARCHON){
-            RoboArchon.init();
-            RoboArchon.tryTurn();            
-        }else if(type == RobotType.SOLDIER){
-            RoboSoldier.init();
-            RoboSoldier.tryTurn();
-        }else{
-            if (allEnemeies.size() > 0){
-                if(rc.isWeaponReady())
-                    rc.attackLocation(allEnemeies.get(0).location);
-            }else{
-                if ( rc.isCoreReady() ){
-                    Direction dir = getRandomDirection();
-                    if ( rc.canMove(dir) ){
-                        rc.move(dir);
-                    }
+        switch (type){
+            case ARCHON: 
+                        RoboArchon.init();
+                        RoboArchon.tryTurn();
+                        break;
+            case SOLDIER:
+                        RoboSoldier.init();
+                        RoboSoldier.tryTurn();
+                        break;
+            case SCOUT: 
+                        RoboScout.init();
+                        RoboScout.tryTurn();
+                        break;
+            default:
+                    if ( rc.isCoreReady() ){
+                        Direction dir = getRandomDirection();
+                        if ( rc.canMove(dir) ){
+                            rc.move(dir);
+                        }
 
-                }
-            }
-        }//
+                    }
+                    break;                        
+        }
+        // if (type == RobotType.ARCHON){
+        //     RoboArchon.init();
+        //     RoboArchon.tryTurn();            
+        // }else if(type == RobotType.SOLDIER){
+        //     RoboSoldier.init();
+        //     RoboSoldier.tryTurn();
+        // }else{
+        //     if (allEnemeies.size() > 0){
+        //         if(rc.isWeaponReady())
+        //             rc.attackLocation(allEnemeies.get(0).location);
+        //     }else{
+        //         if ( rc.isCoreReady() ){
+        //             Direction dir = getRandomDirection();
+        //             if ( rc.canMove(dir) ){
+        //                 rc.move(dir);
+        //             }
+
+        //         }
+        //     }
+        // }//
     }
     public static void moveForward(Direction ahead) throws GameActionException{
         if (rc.isCoreReady() == false){
@@ -73,7 +97,7 @@ public class RobotPlayer {
             if (rc.canMove(possibleDirection) && visitedLocs.contains(nextLocation) == false) {
                 rc.move(possibleDirection);
                 visitedLocs.add(nextLocation);
-                if (visitedLocs.size() > 25)
+                if (visitedLocs.size() > 4)
                     visitedLocs.remove(0);
                 return;
             }
@@ -89,4 +113,24 @@ public class RobotPlayer {
             allEnemeies.add(enemey);
         }
     }
+    public static void findInstruction() throws GameActionException{
+        Signal[] incomingSignals = rc.emptySignalQueue();
+        Signal m = null;
+        for (int messageOrd = 0; messageOrd < incomingSignals.length; messageOrd++) {
+            m = incomingSignals[messageOrd];
+            if (ours.ordinal() == m.getMessage()[0])
+                break;
+        }
+        if (m == null)
+            return;
+        // System.out.println("Came here");
+        // System.out.println("Came here");
+        // System.out.println("Came here");
+        // System.out.println("Came here");
+        // System.out.println("Came here");
+        MapLocation senderLocation = m.getLocation();
+        Direction targetDirection = Direction.values()[ m.getMessage()[1] ];
+        MapLocation goTo = senderLocation.add(targetDirection.dx*3,targetDirection.dy*3);
+        theDirection = rc.getLocation().directionTo(goTo);  
+    }    
 }

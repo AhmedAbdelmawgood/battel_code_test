@@ -8,28 +8,28 @@ public class RoboArchon extends RobotPlayer{
 	static RobotType[] buildOrder;
 	static int counter  = 0;
 	static int id;
-	static int lastRoundNumber = 0;
-	static int lastRoundBuild = 0;
-	static boolean build = false; 
+	// // static int lastRoundNumber = 0;
+	// // static int lastRoundBuild = 0;
+	// static boolean build = false; 
 	// static int dir_num;
 	public static void init() throws GameActionException{
-		setBuildOrder();
-		lastRoundNumber = rc.getRoundNum();
-		System.out.println("Before");
-		System.out.println(lastRoundNumber);
-		System.out.println(lastRoundBuild);
-		System.out.println("After");
-		if (lastRoundNumber - lastRoundBuild >= 2){
-			build = true;
-		}else{
-			build = false;
-		}
-		if (build == true){
-			tryBuild();
-			lastRoundBuild = lastRoundNumber;
-		}
 		electLeader();
+		setBuildOrder();
+		// lastRoundNumber = rc.getRoundNum();
+		totalEnemeiesPower = 0;
+		totalAlliesPower = 0;
+		int roundNum = rc.getRoundNum();
+		if (roundNum > 400 ){
+			if(rc.getRoundNum()%3 == 0){
+				if (rc.isCoreReady())
+					tryBuild();			
+			}
+		}
+		else
+			tryBuild();			
 		sendSignal();
+		theDirection = Sensors.getSafeDirection();
+		// System.out.println(theDirection);
 	}
 	public static void tryTurn() throws GameActionException{
         // int fate = rand.nextInt(1000);
@@ -39,11 +39,13 @@ public class RoboArchon extends RobotPlayer{
         // }else if(rc.canMove(dir)){
         //     rc.move(dir);
         // }
+        if (id != 0)
+        	findInstruction();
         moveForward(theDirection);	
 	}
 
 	public static void tryBuild() throws GameActionException{
-		System.out.println("Try Building");
+		// System.out.println("Try Building");
 		if (counter < buildOrder.length){
 			RobotType typeToBuild = buildOrder[counter];
 			if(rc.hasBuildRequirements(typeToBuild)){
